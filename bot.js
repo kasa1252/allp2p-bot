@@ -1,23 +1,20 @@
 // ==========================================
-// ALLP2P CORE BOT ENGINE (PRODUCTION CLOUD VERSION)
+// ALLP2P CORE BOT ENGINE (PRODUCTION CLOUD VERSION 2.0)
 // ==========================================
 const { Telegraf, Markup } = require('telegraf');
 const axios = require('axios');
 
-// 🟢 የቴሌግራም ቦት ቶክን እና የቻፓ ቁልፎች (ከ Render Environment Variables ይነበባሉ)
 const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || "8939335559:AAGcTFSnG2aAb_1BBh_1k-y6F6-KYn94bfs";
 const CHAPA_SECRET_KEY = process.env.CHAPA_SECRET_KEY || "CHASECK_TEST-xxxxxxxxxxxxxxxxxxxx"; 
-const OWNER_ADMIN_CHAT_ID = "1722318"; // የአድሚን ቴሌግራም ID
+const OWNER_ADMIN_CHAT_ID = "1722318"; 
 
 const bot = new Telegraf(TELEGRAM_BOT_TOKEN);
 
-// 💾 የሲስተም መዝገቦች
 const userSessions = {};   
 const activeMarketAds = []; 
 const activeP2pChats = {};   
 const userBalances = {};    
 
-// 🏠 ዋና ማውጫ
 const mainInterfaceMenu = (ctx) => {
     return Markup.keyboard([
         ['🛒 P2P ገበያ (Market)', '📢 ማስታወቂያ ልጠፍ (Post Ad)'],
@@ -26,7 +23,6 @@ const mainInterfaceMenu = (ctx) => {
     ]).resize();
 };
 
-// 🏁 የቦቱ መጀመሪያ
 bot.command('start', async (ctx) => {
     const chatId = ctx.chat.id;
     if (!userBalances[chatId]) {
@@ -36,7 +32,6 @@ bot.command('start', async (ctx) => {
     await ctx.reply(`👋 ሰላም ${ctx.from.first_name || 'ተጠቃሚ'}! ወደ ALLP2P መገበያያ ቦት በደህና መጡ።\n\nእዚህ ቦት ላይ በአስተማማኝ ሁኔታ ገንዘብ ማስገባት፣ ማውጣት፣ እና ከሌሎች ተጠቃሚዎች ጋር 24 ሰዓት መገበያየት ይችላሉ።`, mainInterfaceMenu(ctx));
 });
 
-// 💰 የኔ ቦርሳ
 bot.hears('💰 የኔ ቦርሳ (Wallet)', async (ctx) => {
     const chatId = ctx.chat.id;
     const balance = userBalances[chatId] || { etb: 0.00, usdt: 0.00 };
@@ -72,7 +67,6 @@ bot.action(/^WITHDRAW_(APPROVE|REJECT)_(.+)\$/, async (ctx) => {
     await ctx.answerCbQuery();
 });
 
-// 🛒 P2P ገበያ
 bot.hears('🛒 P2P ገበያ (Market)', async (ctx) => {
     if (activeMarketAds.length === 0) return ctx.reply('🔍 በአሁኑ ሰዓት የወጣ የ P2P ማስታወቂያ የለም።');
     await ctx.reply('📈 የቀጥታ የ P2P ማስታወቂያዎች ዝርዝር፦');
@@ -96,7 +90,6 @@ bot.action(/^SET_AD_(BUY|SELL)\$/, async (ctx) => {
     await ctx.reply(`🪙 የ *USDT መጠን* በቁጥር ብቻ ያስገቡ፦`);
 });
 
-// 🤝 የቀጥታ ቻት
 bot.action(/^TRADE_START_(.+)\$/, async (ctx) => {
     const adId = ctx.match[1];
     const buyerChatId = ctx.chat.id;
@@ -120,7 +113,6 @@ bot.hears('ℹ️ እርዳታና መረጃ (Help)', async (ctx) => {
     await ctx.reply('ℹ️ *ALLP2P የንግድ መርጃ*\n\n1. በ *የኔ ቦርሳ* ብር ያስገቡ።\n2. በ *P2P ገበያ* ይገበያዩ።', mainInterfaceMenu(ctx));
 });
 
-// 📥 TEXT HANDLER
 bot.on('text', async (ctx) => {
     const chatId = ctx.chat.id;
     const messageText = ctx.message.text.trim();
@@ -205,7 +197,6 @@ bot.on('text', async (ctx) => {
     }
 });
 
-// 🚀 Start Web Server for Render
 const express = require('express');
 const app = express();
 const PORT = process.env.PORT || 3000;
